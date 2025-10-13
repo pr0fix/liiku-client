@@ -2182,7 +2182,6 @@
     },
     {
       "id": "poi_r20",
-      "visibility":"none",
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "poi",
@@ -2210,7 +2209,8 @@
         "text-font": ["Noto Sans Italic"],
         "text-max-width": 9,
         "text-offset": [0, 0.6],
-        "text-size": 12
+        "text-size": 12,
+        "visibility": "none"
       },
       "paint": {
         "text-color": "#666",
@@ -2221,7 +2221,6 @@
     },
     {
       "id": "poi_r7",
-      "visibility":"none",
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "poi",
@@ -2251,7 +2250,7 @@
         "text-max-width": 9,
         "text-offset": [0, 0.6],
         "text-size": 12,
-        "visibility": "visible"
+        "visibility": "none"
       },
       "paint": {
         "text-color": "#666",
@@ -2262,7 +2261,6 @@
     },
     {
       "id": "poi_r1",
-      "visibility":"none",
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "poi",
