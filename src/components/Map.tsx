@@ -33,6 +33,7 @@ const MapContainer: FC<MapContainerProps> = ({ vehicles, loading }) => {
       {!loading &&
         vehicles.map((vehicle) => (
           <Marker
+          onClick={() => console.log(`You pressed ${vehicle.routeName} to ${vehicle.headsign}`)}
             key={vehicle.vehicleId}
             longitude={vehicle.longitude}
             latitude={vehicle.latitude}

@@ -15,6 +15,7 @@ interface Vehicle {
   speed: number;
   routeDesc: string;
   routeName: string;
+  routeLongName: string;
   routeId: string;
   occupancyStatus: string;
   longitude: number;

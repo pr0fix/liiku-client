@@ -36,6 +36,7 @@ export const fetchTransitData = async (): Promise<TransitDataResult> => {
       speed: item.speed,
       routeDesc: item.routeDesc,
       routeName: item.routeName,
+      routeLongName: item.routeLongName,
       routeId: item.routeId,
       occupancyStatus: item.occupancyStatus,
       latitude: item.latitude,
