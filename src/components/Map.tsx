@@ -7,14 +7,14 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { FC } from "react";
 import { DEFAULT_LAT, DEFAULT_LON } from "../utils/constants";
-import type { BusPosition } from "../utils/types";
+import type { Vehicle } from "../utils/types";
 
 interface MapContainerProps {
-  buses: BusPosition[];
+  vehicles: Vehicle[];
   loading: boolean;
 }
 
-const MapContainer: FC<MapContainerProps> = ({ buses, loading }) => {
+const MapContainer: FC<MapContainerProps> = ({ vehicles, loading }) => {
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
   return (
@@ -31,11 +31,11 @@ const MapContainer: FC<MapContainerProps> = ({ buses, loading }) => {
       <GeolocateControl position="bottom-right" />
       <NavigationControl visualizePitch visualizeRoll position="bottom-right" />
       {!loading &&
-        buses.map((bus) => (
+        vehicles.map((vehicle) => (
           <Marker
-            key={bus.id}
-            longitude={bus.longitude}
-            latitude={bus.latitude}
+            key={vehicle.vehicleId}
+            longitude={vehicle.longitude}
+            latitude={vehicle.latitude}
             anchor="center"
           >
             <div
@@ -47,7 +47,7 @@ const MapContainer: FC<MapContainerProps> = ({ buses, loading }) => {
                 border: "2px solid white",
                 boxShadow: "0 0 4px #0008",
               }}
-              title={`Bus ${bus.id} (${bus.speed}) km/h`}
+              title={`Bus ${vehicle.vehicleId} (${vehicle.speed}) km/h`}
             />
           </Marker>
         ))}
