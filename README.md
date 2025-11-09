@@ -82,7 +82,7 @@ npm run lint
 
 ### Map Features
 - [ ] **Clustered markers** - Group nearby vehicles when zoomed out (consider supercluster or deck.gl)
-- [ ] **Vehicle direction indicators** - Use bearing property to show direction
+- [x] **Vehicle direction indicators** - Use bearing property to show direction
 - [ ] **Route lines** - Draw actual routes using GTFS shapes data (show on vehicle selection)
 - [ ] **3D vehicle models** - Switch markers to 3D models when zoomed in closely
 - [ ] **Vehicle history trail** - Display path history for selected vehicles
@@ -93,7 +93,7 @@ npm run lint
 - [ ] **Search functionality** - Find specific routes and center map on them
 - [ ] **Dark mode** - Theme toggle with localStorage persistence
 - [ ] **Loading states** - Add skeletons or progress bars for better UX
-- [ ] **Route color coding** - Different colors per vehicle type (blue for buses, orange for metro, etc.)
+- [x] **Route color coding** - Different colors per vehicle type (blue for buses, orange for metro, etc.)
 
 ### User Features
 - [ ] **User location tracking** - Show nearest vehicles to current position

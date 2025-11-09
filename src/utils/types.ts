@@ -15,6 +15,7 @@ interface Vehicle {
   currentStatus: number;
   occupancyStatus: string;
   startTime: string;
+  vehicleType: string;
 }
 
 export type { Vehicle };

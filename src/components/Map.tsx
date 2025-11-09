@@ -11,6 +11,18 @@ interface MapContainerProps {
   loading: boolean;
 }
 
+const VEHICLE_COLORS: Record<string, string> = {
+  bus: "#0000BF",
+  tram: "#008741",
+  metro: "#FD4F00",
+  rail: "#8C4799",
+  ferry: "#9FC9EB",
+};
+
+const getVehicleColor = (vehicleType: string): string => {
+  return VEHICLE_COLORS[vehicleType] || "#3B82F6";
+};
+
 const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading }: MapContainerProps) => {
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
@@ -41,6 +53,7 @@ const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading }: MapCont
             onClick={(e) => {
               e.originalEvent.stopPropagation();
               setSelectedVehicleId(vehicle.vehicleId);
+              console.log(vehicle.vehicleType)
             }}
             longitude={vehicle.animatedLongitude}
             latitude={vehicle.animatedLatitude}
@@ -53,7 +66,7 @@ const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading }: MapCont
                 height: 0,
                 borderLeft: "8px solid transparent",
                 borderRight: "8px solid transparent",
-                borderBottom: "20px solid blue",
+                borderBottom: `20px solid ${getVehicleColor(vehicle.vehicleType)}`,
                 cursor: "pointer",
                 filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))",
               }}

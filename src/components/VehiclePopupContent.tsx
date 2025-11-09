@@ -12,5 +12,6 @@ export const VehiclePopupContent: FC<VehiclePopupContentProps> = ({ vehicle }) =
       <p className="text-lg">{vehicle.headsign}</p>
     </div>
     {vehicle.occupancyStatus && <p>{vehicle.occupancyStatus}</p>}
+    <p className="text-sm">{vehicle.speed}</p>
   </div>
 );
