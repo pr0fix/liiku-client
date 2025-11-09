@@ -16,6 +16,7 @@ const VEHICLE_COLORS: Record<string, string> = {
   tram: "#008741",
   metro: "#FD4F00",
   rail: "#8C4799",
+  lightrail: "#007E79",
   ferry: "#9FC9EB",
 };
 
@@ -53,7 +54,7 @@ const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading }: MapCont
             onClick={(e) => {
               e.originalEvent.stopPropagation();
               setSelectedVehicleId(vehicle.vehicleId);
-              console.log(vehicle.vehicleType)
+              console.log(vehicle.vehicleType);
             }}
             longitude={vehicle.animatedLongitude}
             latitude={vehicle.animatedLatitude}
