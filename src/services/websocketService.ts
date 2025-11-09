@@ -1,10 +1,6 @@
 import type { Vehicle } from "../utils/types";
 
-export type ConnectionStatus =
-  | "connecting"
-  | "connected"
-  | "disconnected"
-  | "error";
+export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
 
 interface VehicleChanges {
   updated: Vehicle[];
@@ -114,9 +110,7 @@ export class WebSocketService {
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts);
     this.reconnectAttempts++;
 
-    console.log(
-      `Reconnecting in ${delay}ms... (attempt ${this.reconnectAttempts})`
-    );
+    console.log(`Reconnecting in ${delay}ms... (attempt ${this.reconnectAttempts})`);
 
     setTimeout(() => {
       this.connect(url);

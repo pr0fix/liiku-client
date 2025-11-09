@@ -8,8 +8,7 @@ const App = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>("connecting");
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const handleVehiclesUpdate = useCallback(

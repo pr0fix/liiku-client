@@ -10,20 +10,31 @@ interface AnimatedVehicle extends Vehicle {
 const ANIMATION_DURATION: number = 10000; // 10 seconds to match backend updates
 
 export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
-  const [animatedVehicles, setAnimatedVehicles] = useState<AnimatedVehicle[]>(
-    []
-  );
-  const previousPositionsRef = useRef<
-    Map<string, { lat: number; lng: number }>
-  >(new Map());
-  const targetPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(
-    new Map()
-  );
+  const [animatedVehicles, setAnimatedVehicles] = useState<AnimatedVehicle[]>([]);
+  const previousPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
+  const targetPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
   const animationStartTimeRef = useRef<number>(Date.now());
   const animationFrameRef = useRef<number>(0);
-  const currentAnimatedPositionsRef = useRef<
-    Map<string, { lat: number; lng: number }>
-  >(new Map());
+  const currentAnimatedPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
+  const pausedTimeRef = useRef<number>(0);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        pausedTimeRef.current = Date.now();
+      } else if (pausedTimeRef.current > 0) {
+        const pauseDuration = Date.now() - pausedTimeRef.current;
+        animationStartTimeRef.current += pauseDuration;
+        pausedTimeRef.current = 0;
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     // When new vehicles arrive, update target positions and start animation
@@ -34,14 +45,9 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
 
       // Log if position actually changed
       const currentTarget = targetPositionsRef.current.get(vehicle.vehicleId);
-      if (
-        currentTarget &&
-        (currentTarget.lat !== newPos.lat || currentTarget.lng !== newPos.lng)
-      ) {
+      if (currentTarget && (currentTarget.lat !== newPos.lat || currentTarget.lng !== newPos.lng)) {
         // Use current animated position as the new starting point
-        const currentAnimated = currentAnimatedPositionsRef.current.get(
-          vehicle.vehicleId
-        );
+        const currentAnimated = currentAnimatedPositionsRef.current.get(vehicle.vehicleId);
         if (currentAnimated) {
           previousPositionsRef.current.set(vehicle.vehicleId, currentAnimated);
         } else {
@@ -58,6 +64,7 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
 
     targetPositionsRef.current = newTargets;
     animationStartTimeRef.current = Date.now();
+    pausedTimeRef.current = 0;
 
     const animate = () => {
       const currentTime = Date.now();
