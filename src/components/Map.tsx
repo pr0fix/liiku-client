@@ -10,6 +10,7 @@ import { memo, useState, type FC } from "react";
 import { DEFAULT_LAT, DEFAULT_LON } from "../utils/constants";
 import type { Vehicle } from "../utils/types";
 import { useVehicleAnimation } from "../hooks/useVehicleAnimation";
+import { VehiclePopupContent } from "./VehiclePopupContent";
 
 interface MapContainerProps {
   vehicles: Vehicle[];
@@ -49,27 +50,25 @@ const MapContainer: FC<MapContainerProps> = memo(
         {!loading &&
           animatedVehicles.map((vehicle) => (
             <Marker
+              key={vehicle.vehicleId}
               onClick={(e) => {
-                console.log(
-                  `You pressed ${vehicle.routeName} to ${vehicle.headsign}`
-                );
                 e.originalEvent.stopPropagation();
                 setSelectedVehicleId(vehicle.vehicleId);
               }}
-              key={vehicle.vehicleId}
               longitude={vehicle.animatedLongitude}
               latitude={vehicle.animatedLatitude}
               anchor="center"
+              rotation={vehicle.bearing}
             >
               <div
                 style={{
-                  width: 16,
-                  height: 16,
-                  background: "blue",
-                  borderRadius: "50%",
-                  border: "2px solid white",
-                  boxShadow: "0 0 4px #0008",
+                  width: 0,
+                  height: 0,
+                  borderLeft: "8px solid transparent",
+                  borderRight: "8px solid transparent",
+                  borderBottom: "20px solid blue",
                   cursor: "pointer",
+                  filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))",
                 }}
               />
             </Marker>
@@ -81,13 +80,7 @@ const MapContainer: FC<MapContainerProps> = memo(
             longitude={selectedVehicle.longitude}
             onClose={() => setSelectedVehicleId(null)}
           >
-            <div style={{ padding: "8px" }}>
-              <strong>{selectedVehicle.routeName}</strong>
-              <div>{selectedVehicle.headsign}</div>
-              <div style={{ fontSize: "12px", color: "#666" }}>
-                Vehicle: {selectedVehicle.vehicleId}
-              </div>
-            </div>
+            <VehiclePopupContent vehicle={selectedVehicle} />
           </Popup>
         )}
       </Map>

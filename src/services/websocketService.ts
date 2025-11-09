@@ -6,17 +6,17 @@ export type ConnectionStatus =
   | "disconnected"
   | "error";
 
-interface WebSocketMessage {
-  type: "initial" | "update" | "error" | "pong";
-  data?: any;
-  message?: string;
-  timestamp?: number;
-}
-
 interface VehicleChanges {
   updated: Vehicle[];
   added: Vehicle[];
   removed: string[];
+}
+
+interface WebSocketMessage {
+  type: "initial" | "update" | "error" | "pong";
+  data?: Vehicle[] | VehicleChanges;
+  message?: string;
+  timestamp?: number;
 }
 
 export class WebSocketService {
@@ -62,15 +62,17 @@ export class WebSocketService {
 
   private handleMessage(message: WebSocketMessage) {
     switch (message.type) {
-      case "initial":
+      case "initial": {
         this.vehicles.clear();
-        message.data.forEach((vehicle: Vehicle) => {
+        const initialData = message.data as Vehicle[];
+        initialData.forEach((vehicle: Vehicle) => {
           this.vehicles.set(vehicle.vehicleId, vehicle);
         });
         this.onVehiclesUpdate?.([...this.vehicles.values()]);
         break;
+      }
 
-      case "update":
+      case "update": {
         const changes = message.data as VehicleChanges;
 
         changes.added.forEach((vehicle) => {
@@ -87,6 +89,7 @@ export class WebSocketService {
 
         this.onVehiclesUpdate?.([...this.vehicles.values()]);
         break;
+      }
 
       case "error":
         console.error("Server error:", message.message);
@@ -98,6 +101,7 @@ export class WebSocketService {
 
       default:
         console.warn("Unknown message type:", message.type);
+        break;
     }
   }
 
