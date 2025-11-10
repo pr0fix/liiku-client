@@ -1,19 +1,5 @@
-import type { Vehicle } from "../utils/types";
+import type { ConnectionStatus, Vehicle, VehicleChanges, WebSocketMessage } from "../utils/types";
 
-export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
-
-interface VehicleChanges {
-  updated: Vehicle[];
-  added: Vehicle[];
-  removed: string[];
-}
-
-interface WebSocketMessage {
-  type: "initial" | "update" | "error" | "pong";
-  data?: Vehicle[] | VehicleChanges;
-  message?: string;
-  timestamp?: number;
-}
 
 export class WebSocketService {
   private ws: WebSocket | null = null;

@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import type { Vehicle } from "../utils/types";
 import { lerp, calculateProgress } from "../utils/animation";
+import type { AnimatedVehicle, Vehicle } from "../utils/types";
 
-interface AnimatedVehicle extends Vehicle {
-  animatedLatitude: number;
-  animatedLongitude: number;
-}
+
 
 const ANIMATION_DURATION: number = 10000; // 10 seconds to match backend updates
 

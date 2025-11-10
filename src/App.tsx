@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import MapContainer from "./components/Map";
-import type { Vehicle } from "./utils/types";
-import type { ConnectionStatus } from "./services/websocketService";
+import type { ConnectionStatus, Vehicle } from "./utils/types";
 import { WebSocketService } from "./services/websocketService";
 
 const App = () => {

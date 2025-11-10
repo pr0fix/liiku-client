@@ -18,4 +18,24 @@ interface Vehicle {
   vehicleType: string;
 }
 
-export type { Vehicle };
+interface AnimatedVehicle extends Vehicle {
+  animatedLatitude: number;
+  animatedLongitude: number;
+}
+
+interface VehicleChanges {
+  updated: Vehicle[];
+  added: Vehicle[];
+  removed: string[];
+}
+
+type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
+
+interface WebSocketMessage {
+  type: "initial" | "update" | "error" | "pong";
+  data?: Vehicle[] | VehicleChanges;
+  message?: string;
+  timestamp?: number;
+}
+
+export type { Vehicle, AnimatedVehicle, ConnectionStatus, VehicleChanges, WebSocketMessage };
