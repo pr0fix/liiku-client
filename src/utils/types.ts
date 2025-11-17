@@ -38,4 +38,18 @@ interface WebSocketMessage {
   timestamp?: number;
 }
 
-export type { Vehicle, AnimatedVehicle, ConnectionStatus, VehicleChanges, WebSocketMessage };
+interface ViewportBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
+export type {
+  Vehicle,
+  AnimatedVehicle,
+  ConnectionStatus,
+  VehicleChanges,
+  WebSocketMessage,
+  ViewportBounds,
+};

@@ -1,10 +1,18 @@
-import { GeolocateControl, Map, Marker, NavigationControl, Popup } from "@vis.gl/react-maplibre";
+import {
+  GeolocateControl,
+  Map,
+  Marker,
+  NavigationControl,
+  Popup,
+  useMap,
+} from "@vis.gl/react-maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { memo, useState, type FC } from "react";
 import { DEFAULT_LAT, DEFAULT_LON } from "../utils/constants";
-import type { Vehicle } from "../utils/types";
+import type { Vehicle, ViewportBounds } from "../utils/types";
 import { useVehicleAnimation } from "../hooks/useVehicleAnimation";
 import { VehiclePopupContent } from "./VehiclePopupContent";
+import { useViewportFiltering } from "../hooks/useViewportFiltering";
 
 interface MapContainerProps {
   vehicles: Vehicle[];
@@ -24,31 +32,31 @@ const getVehicleColor = (vehicleType: string): string => {
   return VEHICLE_COLORS[vehicleType] || "#3B82F6";
 };
 
-const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading }: MapContainerProps) => {
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
+const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean }> = memo(({ vehicles, loading }) => {
   const animatedVehicles = useVehicleAnimation(vehicles);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
-
+  const { current: map } = useMap();
   const selectedVehicle = selectedVehicleId
     ? vehicles.find((v) => v.vehicleId === selectedVehicleId)
     : null;
 
+  if (!map) return;
+  let mapBounds = map?.getBounds();
+  const viewportBounds: ViewportBounds = {
+    north: mapBounds?.getNorth(),
+    south: mapBounds?.getSouth(),
+    east: mapBounds?.getEast(),
+    west: mapBounds?.getWest(),
+  };
+
+  const filteredVehicles = useViewportFiltering(animatedVehicles, viewportBounds);
+
   return (
-    <Map
-      initialViewState={{
-        latitude: DEFAULT_LAT,
-        longitude: DEFAULT_LON,
-        zoom: 14,
-        pitch: 60,
-      }}
-      style={{ width: windowWidth, height: windowHeight }}
-      mapStyle="/styles/map.json"
-    >
+    <>
       <GeolocateControl position="bottom-right" />
       <NavigationControl visualizePitch visualizeRoll position="bottom-right" />
       {!loading &&
-        animatedVehicles.map((vehicle) => (
+        filteredVehicles.map((vehicle) => (
           <Marker
             key={vehicle.vehicleId}
             onClick={(e) => {
@@ -84,6 +92,25 @@ const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading }: MapCont
           <VehiclePopupContent vehicle={selectedVehicle} />
         </Popup>
       )}
+    </>
+  );
+});
+
+const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading }: MapContainerProps) => {
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  return (
+    <Map
+      initialViewState={{
+        latitude: DEFAULT_LAT,
+        longitude: DEFAULT_LON,
+        zoom: 14,
+        pitch: 60,
+      }}
+      style={{ width: windowWidth, height: windowHeight }}
+      mapStyle="/styles/map.json"
+    >
+      <MapContent vehicles={vehicles} loading={loading} />
     </Map>
   );
 });
