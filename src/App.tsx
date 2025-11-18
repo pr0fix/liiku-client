@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MapContainer from "./components/Map";
 import type { ConnectionStatus, Vehicle } from "./utils/types";
 import { WebSocketService } from "./services/websocketService";
+import { Filtering } from "./components/Filtering";
 
 const App = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
@@ -46,6 +48,11 @@ const App = () => {
     };
   }, [handleVehiclesUpdate, handleStatusChange, handleError]);
 
+  const filteredVehicles = useMemo(() => {
+    if (!searchQuery) return vehicles;
+    return vehicles.filter((v) => v.routeName.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [vehicles, searchQuery]);
+
   return (
     <>
       <div className="fixed top-5 right-5 z-[1000]">
@@ -78,7 +85,10 @@ const App = () => {
       <div className="fixed top-20 right-5 z-[1000] bg-blue-500 text-white px-4 py-2 rounded-lg">
         Vehicles: {vehicles.length}
       </div>
-      <MapContainer vehicles={vehicles} loading={loading} />
+      <div className="fixed top-5 left-5 z-[1000] ">
+        <Filtering query={searchQuery} onQueryChange={setSearchQuery}/>
+      </div>
+      <MapContainer vehicles={filteredVehicles} loading={loading} />
     </>
   );
 };

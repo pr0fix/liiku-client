@@ -49,14 +49,14 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean }> = memo(({ vehicl
     west: mapBounds?.getWest(),
   };
 
-  const filteredVehicles = useViewportFiltering(animatedVehicles, viewportBounds);
+  const vehiclesInViewport = useViewportFiltering(animatedVehicles, viewportBounds);
 
   return (
     <>
       <GeolocateControl position="bottom-right" />
       <NavigationControl visualizePitch visualizeRoll position="bottom-right" />
       {!loading &&
-        filteredVehicles.map((vehicle) => (
+        vehiclesInViewport.map((vehicle) => (
           <Marker
             key={vehicle.vehicleId}
             onClick={(e) => {
