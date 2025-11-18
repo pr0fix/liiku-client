@@ -37,7 +37,7 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean }> = memo(({ vehicl
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const { current: map } = useMap();
   const selectedVehicle = selectedVehicleId
-    ? vehicles.find((v) => v.vehicleId === selectedVehicleId)
+    ? animatedVehicles.find((v) => v.vehicleId === selectedVehicleId)
     : null;
 
   if (!map) return;
@@ -79,7 +79,7 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean }> = memo(({ vehicl
                 filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))",
                 boxShadow: `0 0 0 3px ${getVehicleColor(vehicle.vehicleType)}`,
               }}
-              >
+            >
               <div
                 style={{
                   position: "absolute",
@@ -92,16 +92,17 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean }> = memo(({ vehicl
                   borderRight: "8px solid transparent",
                   borderBottom: `8px solid ${getVehicleColor(vehicle.vehicleType)}`,
                 }}
-                />
+              />
             </div>
           </Marker>
         ))}
       {selectedVehicle && (
         <Popup
           anchor="bottom"
-          latitude={selectedVehicle.latitude}
-          longitude={selectedVehicle.longitude}
+          latitude={selectedVehicle.animatedLatitude}
+          longitude={selectedVehicle.animatedLongitude}
           onClose={() => setSelectedVehicleId(null)}
+          offset={15}
         >
           <VehiclePopupContent vehicle={selectedVehicle} />
         </Popup>
