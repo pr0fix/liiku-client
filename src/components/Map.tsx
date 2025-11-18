@@ -73,13 +73,27 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean }> = memo(({ vehicl
               style={{
                 width: 0,
                 height: 0,
-                borderLeft: "8px solid transparent",
-                borderRight: "8px solid transparent",
-                borderBottom: `20px solid ${getVehicleColor(vehicle.vehicleType)}`,
+                borderRadius: "100%",
+                border: `10px solid white`,
                 cursor: "pointer",
                 filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))",
+                boxShadow: `0 0 0 3px ${getVehicleColor(vehicle.vehicleType)}`,
               }}
-            />
+              >
+              <div
+                style={{
+                  position: "absolute",
+                  top: "-18px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 0,
+                  height: 0,
+                  borderLeft: "8px solid transparent",
+                  borderRight: "8px solid transparent",
+                  borderBottom: `8px solid ${getVehicleColor(vehicle.vehicleType)}`,
+                }}
+                />
+            </div>
           </Marker>
         ))}
       {selectedVehicle && (
