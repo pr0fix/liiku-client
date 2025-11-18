@@ -1,9 +1,11 @@
-interface FilteringProps {
+import type { FC } from "react";
+
+interface SearchProps {
   query: string;
   onQueryChange: (query: string) => void;
 }
 
-export const Filtering = ({ query, onQueryChange }: FilteringProps) => {
+export const Search: FC<SearchProps> = ({ query, onQueryChange }: SearchProps) => {
   return (
     <input
       type="text"

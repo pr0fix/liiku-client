@@ -2,11 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import MapContainer from "./components/Map";
 import type { ConnectionStatus, Vehicle } from "./utils/types";
 import { WebSocketService } from "./services/websocketService";
-import { Filtering } from "./components/Filtering";
+import { Search } from "./components/Search";
+import { Filter } from "./components/Filter";
 
 const App = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedRoutes, setSelectedRoutes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
@@ -49,9 +51,17 @@ const App = () => {
   }, [handleVehiclesUpdate, handleStatusChange, handleError]);
 
   const filteredVehicles = useMemo(() => {
-    if (!searchQuery) return vehicles;
-    return vehicles.filter((v) => v.routeName.toLowerCase().includes(searchQuery.toLowerCase()));
-  }, [vehicles, searchQuery]);
+    let result = vehicles;
+      if (searchQuery) {
+        result = result.filter((v) =>
+          v.routeName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+    if (selectedRoutes.length > 0) {
+      result = result.filter((v) => selectedRoutes.includes(v.routeName));
+    }
+    return result;
+  }, [vehicles, searchQuery, selectedRoutes]);
 
   return (
     <>
@@ -86,7 +96,14 @@ const App = () => {
         Vehicles: {vehicles.length}
       </div>
       <div className="fixed top-5 left-5 z-[1000] ">
-        <Filtering query={searchQuery} onQueryChange={setSearchQuery}/>
+        <Search query={searchQuery} onQueryChange={setSearchQuery} />
+      </div>
+      <div className="fixed top-5 left-65 z-[1000] ">
+        <Filter
+          vehicles={vehicles}
+          selectedRoutes={selectedRoutes}
+          onSelectRoutes={setSelectedRoutes}
+        />
       </div>
       <MapContainer vehicles={filteredVehicles} loading={loading} />
     </>
