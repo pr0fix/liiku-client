@@ -13,6 +13,7 @@ const App = () => {
   const [error, setError] = useState<string | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
 
   const handleVehiclesUpdate = useCallback(
     (newVehicles: Vehicle[]) => {
@@ -50,13 +51,29 @@ const App = () => {
     };
   }, [handleVehiclesUpdate, handleStatusChange, handleError]);
 
+  // Handle tab changes with a websocet reconnect to prevent map markers from flying around :D
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        setShouldAnimate(false);
+
+        setTimeout(() => {
+          setShouldAnimate(true);
+        }, 100);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   const filteredVehicles = useMemo(() => {
     let result = vehicles;
-      if (searchQuery) {
-        result = result.filter((v) =>
-          v.routeName.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
+    if (searchQuery) {
+      result = result.filter((v) => v.routeName.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
     if (selectedRoutes.length > 0) {
       result = result.filter((v) => selectedRoutes.includes(v.routeName));
     }
@@ -105,7 +122,7 @@ const App = () => {
           onSelectRoutes={setSelectedRoutes}
         />
       </div>
-      <MapContainer vehicles={filteredVehicles} loading={loading} />
+      <MapContainer vehicles={filteredVehicles} loading={loading} shouldAnimate={shouldAnimate}/>
     </>
   );
 };

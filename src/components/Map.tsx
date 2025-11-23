@@ -17,11 +17,13 @@ import { useViewportFiltering } from "../hooks/useViewportFiltering";
 interface MapContainerProps {
   vehicles: Vehicle[];
   loading: boolean;
+  shouldAnimate: boolean;
 }
 
 const VEHICLE_COLORS: Record<string, string> = {
   bus: "#0000BF",
   tram: "#008741",
+  trunk: "#FD4F00",
   metro: "#FD4F00",
   rail: "#8C4799",
   lightrail: "#007E79",
@@ -32,102 +34,114 @@ const getVehicleColor = (vehicleType: string): string => {
   return VEHICLE_COLORS[vehicleType] || "#3B82F6";
 };
 
-const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean }> = memo(({ vehicles, loading }) => {
-  const animatedVehicles = useVehicleAnimation(vehicles);
-  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
-  const { current: map } = useMap();
-  const selectedVehicle = selectedVehicleId
-    ? animatedVehicles.find((v) => v.vehicleId === selectedVehicleId)
-    : null;
+const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean; shouldAnimate: boolean }> = memo(
+  ({ vehicles, loading, shouldAnimate }) => {
+    const animatedVehicles = useVehicleAnimation(vehicles, shouldAnimate);
+    const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+    const { current: map } = useMap();
+    const selectedVehicle = selectedVehicleId
+      ? animatedVehicles.find((v) => v.vehicleId === selectedVehicleId)
+      : null;
 
-  if (!map) return;
-  let mapBounds = map?.getBounds();
-  const viewportBounds: ViewportBounds = {
-    north: mapBounds?.getNorth(),
-    south: mapBounds?.getSouth(),
-    east: mapBounds?.getEast(),
-    west: mapBounds?.getWest(),
-  };
+    if (!map) return;
+    let mapBounds = map?.getBounds();
+    const viewportBounds: ViewportBounds = {
+      north: mapBounds?.getNorth(),
+      south: mapBounds?.getSouth(),
+      east: mapBounds?.getEast(),
+      west: mapBounds?.getWest(),
+    };
 
-  const vehiclesInViewport = useViewportFiltering(animatedVehicles, viewportBounds);
+    const vehiclesInViewport = useViewportFiltering(animatedVehicles, viewportBounds);
 
-  return (
-    <>
-      <GeolocateControl position="bottom-right" />
-      <NavigationControl visualizePitch visualizeRoll position="bottom-right" />
-      {!loading &&
-        vehiclesInViewport.map((vehicle) => (
-          <Marker
-            key={vehicle.vehicleId}
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              setSelectedVehicleId(vehicle.vehicleId);
-              console.log(vehicle.vehicleType);
-            }}
-            longitude={vehicle.animatedLongitude}
-            latitude={vehicle.animatedLatitude}
-            anchor="center"
-            rotation={vehicle.bearing}
-          >
-            <div
-              style={{
-                width: 0,
-                height: 0,
-                borderRadius: "100%",
-                border: `10px solid white`,
-                cursor: "pointer",
-                filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))",
-                boxShadow: `0 0 0 3px ${getVehicleColor(vehicle.vehicleType)}`,
+    return (
+      <>
+        <GeolocateControl position="bottom-right" />
+        <NavigationControl visualizePitch visualizeRoll position="bottom-right" />
+        {!loading &&
+          vehiclesInViewport.map((vehicle) => (
+            <Marker
+              key={vehicle.vehicleId}
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                setSelectedVehicleId(vehicle.vehicleId);
+                console.log(vehicle.vehicleType);
               }}
+              longitude={vehicle.animatedLongitude}
+              latitude={vehicle.animatedLatitude}
+              anchor="center"
+              rotation={vehicle.bearing}
             >
               <div
                 style={{
-                  position: "absolute",
-                  top: "-18px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
                   width: 0,
                   height: 0,
-                  borderLeft: "8px solid transparent",
-                  borderRight: "8px solid transparent",
-                  borderBottom: `8px solid ${getVehicleColor(vehicle.vehicleType)}`,
+                  borderRadius: "100%",
+                  border: `12px solid white`,
+                  cursor: "pointer",
+                  filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))",
+                  boxShadow: `0 0 0 3px ${getVehicleColor(vehicle.vehicleType)}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: `${vehicle.routeName.length > 3 ? "9px" : "12px"}`,
+                  fontWeight: "bold",
+                  color: "black",
+                  position: "relative",
                 }}
-              />
-            </div>
-          </Marker>
-        ))}
-      {selectedVehicle && (
-        <Popup
-          anchor="bottom"
-          latitude={selectedVehicle.animatedLatitude}
-          longitude={selectedVehicle.animatedLongitude}
-          onClose={() => setSelectedVehicleId(null)}
-          offset={15}
-        >
-          <VehiclePopupContent vehicle={selectedVehicle} />
-        </Popup>
-      )}
-    </>
-  );
-});
+              >
+                {vehicle.routeName}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-18px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: 0,
+                    height: 0,
+                    borderLeft: "8px solid transparent",
+                    borderRight: "8px solid transparent",
+                    borderBottom: `6px solid ${getVehicleColor(vehicle.vehicleType)}`,
+                  }}
+                />
+              </div>
+            </Marker>
+          ))}
+        {selectedVehicle && (
+          <Popup
+            anchor="bottom"
+            latitude={selectedVehicle.animatedLatitude}
+            longitude={selectedVehicle.animatedLongitude}
+            onClose={() => setSelectedVehicleId(null)}
+            offset={15}
+          >
+            <VehiclePopupContent vehicle={selectedVehicle} />
+          </Popup>
+        )}
+      </>
+    );
+  }
+);
 
-const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading }: MapContainerProps) => {
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  return (
-    <Map
-      initialViewState={{
-        latitude: DEFAULT_LAT,
-        longitude: DEFAULT_LON,
-        zoom: 14,
-        pitch: 60,
-      }}
-      style={{ width: windowWidth, height: windowHeight }}
-      mapStyle="/styles/map.json"
-    >
-      <MapContent vehicles={vehicles} loading={loading} />
-    </Map>
-  );
-});
+const MapContainer: FC<MapContainerProps> = memo(
+  ({ vehicles, loading, shouldAnimate }: MapContainerProps) => {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    return (
+      <Map
+        initialViewState={{
+          latitude: DEFAULT_LAT,
+          longitude: DEFAULT_LON,
+          zoom: 14,
+          pitch: 60,
+        }}
+        style={{ width: windowWidth, height: windowHeight }}
+        mapStyle="/styles/map.json"
+      >
+        <MapContent vehicles={vehicles} loading={loading} shouldAnimate={shouldAnimate} />
+      </Map>
+    );
+  }
+);
 
 export default MapContainer;

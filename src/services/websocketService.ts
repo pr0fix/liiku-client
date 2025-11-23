@@ -1,6 +1,5 @@
 import type { ConnectionStatus, Vehicle, VehicleChanges, WebSocketMessage } from "../utils/types";
 
-
 export class WebSocketService {
   private ws: WebSocket | null = null;
   private reconnectAttempts = 0;
@@ -14,32 +13,36 @@ export class WebSocketService {
   onError?: (error: string) => void;
 
   connect(url: string) {
-    this.ws = new WebSocket(url);
-    this.onStatusChange?.("connecting");
+    try {
+      this.ws = new WebSocket(url);
+      this.onStatusChange?.("connecting");
 
-    this.ws.onopen = () => {
-      console.log("WebSocket connected");
-      this.reconnectAttempts = 0;
-      this.onStatusChange?.("connected");
-      this.startHeartbeat();
-    };
+      this.ws.onopen = () => {
+        console.log("WebSocket connected");
+        this.reconnectAttempts = 0;
+        this.onStatusChange?.("connected");
+        this.startHeartbeat();
+      };
 
-    this.ws.onmessage = (event) => {
-      this.handleMessage(JSON.parse(event.data));
-    };
+      this.ws.onmessage = (event) => {
+        this.handleMessage(JSON.parse(event.data));
+      };
 
-    this.ws.onclose = () => {
-      console.log("WebSocket disconnected");
-      this.onStatusChange?.("disconnected");
-      this.stopHeartbeat();
-      this.attemptReconnect(url);
-    };
+      this.ws.onclose = () => {
+        console.log("WebSocket disconnected");
+        this.onStatusChange?.("disconnected");
+        this.stopHeartbeat();
+        this.attemptReconnect(url);
+      };
 
-    this.ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      this.onStatusChange?.("error");
-      this.onError?.("Connection error");
-    };
+      this.ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        this.onStatusChange?.("error");
+        this.onError?.("Connection error");
+      };
+    } catch (error) {
+      this.onError?.(String(error));
+    }
   }
 
   private handleMessage(message: WebSocketMessage) {

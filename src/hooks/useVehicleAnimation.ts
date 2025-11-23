@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { lerp, calculateProgress } from "../utils/animation";
 import type { AnimatedVehicle, Vehicle } from "../utils/types";
 
-
-
 const ANIMATION_DURATION: number = 10000; // 10 seconds to match backend updates
 
-export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
+export function useVehicleAnimation(
+  vehicles: Vehicle[],
+  shouldAnimate: boolean
+): AnimatedVehicle[] {
   const [animatedVehicles, setAnimatedVehicles] = useState<AnimatedVehicle[]>([]);
   const previousPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
   const targetPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
@@ -15,25 +16,33 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
   const currentAnimatedPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
   const pausedTimeRef = useRef<number>(0);
 
+  // Handle tab changes to prevent markers from flying around :D
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        pausedTimeRef.current = Date.now();
-      } else if (pausedTimeRef.current > 0) {
-        const pauseDuration = Date.now() - pausedTimeRef.current;
-        animationStartTimeRef.current += pauseDuration;
-        pausedTimeRef.current = 0;
+    if (!shouldAnimate) {
+      const snapped = vehicles.map((vehicle) => {
+        const pos = { lat: vehicle.latitude, lng: vehicle.longitude };
+
+        // Update all position refs to current target
+        previousPositionsRef.current.set(vehicle.vehicleId, pos);
+        targetPositionsRef.current.set(vehicle.vehicleId, pos);
+        currentAnimatedPositionsRef.current.set(vehicle.vehicleId, pos);
+
+        return {
+          ...vehicle,
+          animatedLatitude: vehicle.latitude,
+          animatedLongitude: vehicle.longitude,
+        };
+      });
+      setAnimatedVehicles(snapped);
+
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
+    }
+  }, [shouldAnimate, vehicles]);
 
   useEffect(() => {
+    if (!shouldAnimate) return;
     // When new vehicles arrive, update target positions and start animation
     const newTargets = new Map<string, { lat: number; lng: number }>();
 
@@ -121,7 +130,7 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [vehicles]);
+  }, [vehicles, shouldAnimate]);
 
   return animatedVehicles;
 }
