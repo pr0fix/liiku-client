@@ -81,7 +81,7 @@ const App = () => {
   }, [vehicles, searchQuery, selectedRoutes]);
 
   return (
-    <>
+    <div className="h-screen w-screen relative overflow-hidden">
       <div className="fixed top-5 right-5 z-[1000]">
         <div
           className={`px-4 py-2 rounded-lg text-white font-semibold ${
@@ -115,15 +115,15 @@ const App = () => {
       <div className="fixed top-5 left-5 z-[1000] ">
         <Search query={searchQuery} onQueryChange={setSearchQuery} />
       </div>
-      <div className="fixed top-5 left-65 z-[1000] ">
+      <div className="fixed top-5 left-64 z-[1000] ">
         <Filter
           vehicles={vehicles}
           selectedRoutes={selectedRoutes}
           onSelectRoutes={setSelectedRoutes}
         />
       </div>
-      <MapContainer vehicles={filteredVehicles} loading={loading} shouldAnimate={shouldAnimate}/>
-    </>
+      <MapContainer vehicles={filteredVehicles} loading={loading} shouldAnimate={shouldAnimate} />
+    </div>
   );
 };
 
