@@ -77,3 +77,34 @@ npm run lint
 - [@vis.gl/react-maplibre](https://visgl.github.io/react-maplibre/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [TypeScript](https://www.typescriptlang.org/)
+
+## TODO
+
+### Map Features
+- [ ] **Clustered markers** - Group nearby vehicles when zoomed out (consider supercluster or deck.gl)
+- [x] **Vehicle direction indicators** - Use bearing property to show direction
+- [ ] **Route lines** - Draw actual routes using GTFS shapes data (show on vehicle selection)
+- [ ] **3D vehicle models** - Switch markers to 3D models when zoomed in closely
+- [ ] **Vehicle history trail** - Display path history for selected vehicles
+
+### UI/UX
+- [ ] **Vehicle popup** - Show detailed information (route, destination, vehicle ID)
+- [ ] **Filter controls** - Filter by route number, direction, or vehicle type
+- [ ] **Search functionality** - Find specific routes and center map on them
+- [ ] **Dark mode** - Theme toggle with localStorage persistence
+- [ ] **Loading states** - Add skeletons or progress bars for better UX
+- [x] **Route color coding** - Different colors per vehicle type (blue for buses, orange for metro, etc.)
+
+### User Features
+- [ ] **User location tracking** - Show nearest vehicles to current position
+- [ ] **Follow mode** - Auto-center and follow selected vehicle along route
+- [ ] **Favorites/Bookmarks** - Save and track specific routes
+- [ ] **Arrival predictions** - Display estimated arrival times at upcoming stops
+
+### Performance
+- [ ] **Viewport rendering** - Only render vehicles visible in current viewport
+- [ ] **Route/stop caching** - Cache data in localStorage to reduce API calls
+
+### Backend/Security
+- [ ] **Authentication** - Implement user registration with database
+- [ ] **API rate limiting** - Add token or cookie system to prevent misuse

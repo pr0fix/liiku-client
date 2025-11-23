@@ -1,23 +1,4 @@
-import type { Vehicle } from "../utils/types";
-
-export type ConnectionStatus =
-  | "connecting"
-  | "connected"
-  | "disconnected"
-  | "error";
-
-interface WebSocketMessage {
-  type: "initial" | "update" | "error" | "pong";
-  data?: any;
-  message?: string;
-  timestamp?: number;
-}
-
-interface VehicleChanges {
-  updated: Vehicle[];
-  added: Vehicle[];
-  removed: string[];
-}
+import type { ConnectionStatus, Vehicle, VehicleChanges, WebSocketMessage } from "../utils/types";
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
@@ -32,45 +13,51 @@ export class WebSocketService {
   onError?: (error: string) => void;
 
   connect(url: string) {
-    this.ws = new WebSocket(url);
-    this.onStatusChange?.("connecting");
+    try {
+      this.ws = new WebSocket(url);
+      this.onStatusChange?.("connecting");
 
-    this.ws.onopen = () => {
-      console.log("WebSocket connected");
-      this.reconnectAttempts = 0;
-      this.onStatusChange?.("connected");
-      this.startHeartbeat();
-    };
+      this.ws.onopen = () => {
+        console.log("WebSocket connected");
+        this.reconnectAttempts = 0;
+        this.onStatusChange?.("connected");
+        this.startHeartbeat();
+      };
 
-    this.ws.onmessage = (event) => {
-      this.handleMessage(JSON.parse(event.data));
-    };
+      this.ws.onmessage = (event) => {
+        this.handleMessage(JSON.parse(event.data));
+      };
 
-    this.ws.onclose = () => {
-      console.log("WebSocket disconnected");
-      this.onStatusChange?.("disconnected");
-      this.stopHeartbeat();
-      this.attemptReconnect(url);
-    };
+      this.ws.onclose = () => {
+        console.log("WebSocket disconnected");
+        this.onStatusChange?.("disconnected");
+        this.stopHeartbeat();
+        this.attemptReconnect(url);
+      };
 
-    this.ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      this.onStatusChange?.("error");
-      this.onError?.("Connection error");
-    };
+      this.ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        this.onStatusChange?.("error");
+        this.onError?.("Connection error");
+      };
+    } catch (error) {
+      this.onError?.(String(error));
+    }
   }
 
   private handleMessage(message: WebSocketMessage) {
     switch (message.type) {
-      case "initial":
+      case "initial": {
         this.vehicles.clear();
-        message.data.forEach((vehicle: Vehicle) => {
+        const initialData = message.data as Vehicle[];
+        initialData.forEach((vehicle: Vehicle) => {
           this.vehicles.set(vehicle.vehicleId, vehicle);
         });
         this.onVehiclesUpdate?.([...this.vehicles.values()]);
         break;
+      }
 
-      case "update":
+      case "update": {
         const changes = message.data as VehicleChanges;
 
         changes.added.forEach((vehicle) => {
@@ -87,6 +74,7 @@ export class WebSocketService {
 
         this.onVehiclesUpdate?.([...this.vehicles.values()]);
         break;
+      }
 
       case "error":
         console.error("Server error:", message.message);
@@ -98,6 +86,7 @@ export class WebSocketService {
 
       default:
         console.warn("Unknown message type:", message.type);
+        break;
     }
   }
 
@@ -110,9 +99,7 @@ export class WebSocketService {
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts);
     this.reconnectAttempts++;
 
-    console.log(
-      `Reconnecting in ${delay}ms... (attempt ${this.reconnectAttempts})`
-    );
+    console.log(`Reconnecting in ${delay}ms... (attempt ${this.reconnectAttempts})`);
 
     setTimeout(() => {
       this.connect(url);

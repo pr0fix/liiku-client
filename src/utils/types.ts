@@ -15,6 +15,41 @@ interface Vehicle {
   currentStatus: number;
   occupancyStatus: string;
   startTime: string;
+  vehicleType: string;
 }
 
-export type { Vehicle };
+interface AnimatedVehicle extends Vehicle {
+  animatedLatitude: number;
+  animatedLongitude: number;
+}
+
+interface VehicleChanges {
+  updated: Vehicle[];
+  added: Vehicle[];
+  removed: string[];
+}
+
+type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
+
+interface WebSocketMessage {
+  type: "initial" | "update" | "error" | "pong";
+  data?: Vehicle[] | VehicleChanges;
+  message?: string;
+  timestamp?: number;
+}
+
+interface ViewportBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
+export type {
+  Vehicle,
+  AnimatedVehicle,
+  ConnectionStatus,
+  VehicleChanges,
+  WebSocketMessage,
+  ViewportBounds,
+};

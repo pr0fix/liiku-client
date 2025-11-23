@@ -1,31 +1,48 @@
 import { useEffect, useRef, useState } from "react";
-import type { Vehicle } from "../utils/types";
 import { lerp, calculateProgress } from "../utils/animation";
+import type { AnimatedVehicle, Vehicle } from "../utils/types";
 
-interface AnimatedVehicle extends Vehicle {
-  animatedLatitude: number;
-  animatedLongitude: number;
-}
+const ANIMATION_DURATION: number = 10000; // 10 seconds to match backend updates
 
-const ANIMATION_DURATION = 10000; // 10 seconds to match backend updates
-
-export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
-  const [animatedVehicles, setAnimatedVehicles] = useState<AnimatedVehicle[]>(
-    []
-  );
-  const previousPositionsRef = useRef<
-    Map<string, { lat: number; lng: number }>
-  >(new Map());
-  const targetPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(
-    new Map()
-  );
+export function useVehicleAnimation(
+  vehicles: Vehicle[],
+  shouldAnimate: boolean
+): AnimatedVehicle[] {
+  const [animatedVehicles, setAnimatedVehicles] = useState<AnimatedVehicle[]>([]);
+  const previousPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
+  const targetPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
   const animationStartTimeRef = useRef<number>(Date.now());
   const animationFrameRef = useRef<number>(0);
-  const currentAnimatedPositionsRef = useRef<
-    Map<string, { lat: number; lng: number }>
-  >(new Map());
+  const currentAnimatedPositionsRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
+  const pausedTimeRef = useRef<number>(0);
+
+  // Handle tab changes to prevent markers from flying around :D
+  useEffect(() => {
+    if (!shouldAnimate) {
+      const snapped = vehicles.map((vehicle) => {
+        const pos = { lat: vehicle.latitude, lng: vehicle.longitude };
+
+        // Update all position refs to current target
+        previousPositionsRef.current.set(vehicle.vehicleId, pos);
+        targetPositionsRef.current.set(vehicle.vehicleId, pos);
+        currentAnimatedPositionsRef.current.set(vehicle.vehicleId, pos);
+
+        return {
+          ...vehicle,
+          animatedLatitude: vehicle.latitude,
+          animatedLongitude: vehicle.longitude,
+        };
+      });
+      setAnimatedVehicles(snapped);
+
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    }
+  }, [shouldAnimate, vehicles]);
 
   useEffect(() => {
+    if (!shouldAnimate) return;
     // When new vehicles arrive, update target positions and start animation
     const newTargets = new Map<string, { lat: number; lng: number }>();
 
@@ -34,14 +51,9 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
 
       // Log if position actually changed
       const currentTarget = targetPositionsRef.current.get(vehicle.vehicleId);
-      if (
-        currentTarget &&
-        (currentTarget.lat !== newPos.lat || currentTarget.lng !== newPos.lng)
-      ) {
+      if (currentTarget && (currentTarget.lat !== newPos.lat || currentTarget.lng !== newPos.lng)) {
         // Use current animated position as the new starting point
-        const currentAnimated = currentAnimatedPositionsRef.current.get(
-          vehicle.vehicleId
-        );
+        const currentAnimated = currentAnimatedPositionsRef.current.get(vehicle.vehicleId);
         if (currentAnimated) {
           previousPositionsRef.current.set(vehicle.vehicleId, currentAnimated);
         } else {
@@ -52,15 +64,13 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
       newTargets.set(vehicle.vehicleId, newPos);
 
       if (!previousPositionsRef.current.has(vehicle.vehicleId)) {
-        console.log(`New vehicle: ${vehicle.vehicleId}`);
         previousPositionsRef.current.set(vehicle.vehicleId, newPos);
       }
     });
 
     targetPositionsRef.current = newTargets;
     animationStartTimeRef.current = Date.now();
-
-    let frameCount = 0;
+    pausedTimeRef.current = 0;
 
     const animate = () => {
       const currentTime = Date.now();
@@ -69,12 +79,6 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
         ANIMATION_DURATION,
         currentTime
       );
-
-      frameCount++;
-      if (frameCount % 60 === 0) {
-        // Log every 60 frames (~1 second)
-        console.log(`🎬 Animation progress: ${(progress * 100).toFixed(1)}%`);
-      }
 
       const updated = vehicles.map((vehicle) => {
         const previous = previousPositionsRef.current.get(vehicle.vehicleId);
@@ -109,7 +113,7 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
       if (progress < 1) {
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
-        // Animation complete - update previous positions to current targets
+        // Animation complete -> update previous positions to current targets
         vehicles.forEach((vehicle) => {
           previousPositionsRef.current.set(vehicle.vehicleId, {
             lat: vehicle.latitude,
@@ -126,7 +130,7 @@ export function useVehicleAnimation(vehicles: Vehicle[]): AnimatedVehicle[] {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [vehicles]);
+  }, [vehicles, shouldAnimate]);
 
   return animatedVehicles;
 }

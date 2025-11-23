@@ -1,16 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MapContainer from "./components/Map";
-import type { Vehicle } from "./utils/types";
-import type { ConnectionStatus } from "./services/websocketService";
+import type { ConnectionStatus, Vehicle } from "./utils/types";
 import { WebSocketService } from "./services/websocketService";
+import { Search } from "./components/Search";
+import { Filter } from "./components/Filter";
 
 const App = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedRoutes, setSelectedRoutes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>("connecting");
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
 
   const handleVehiclesUpdate = useCallback(
     (newVehicles: Vehicle[]) => {
@@ -48,6 +51,35 @@ const App = () => {
     };
   }, [handleVehiclesUpdate, handleStatusChange, handleError]);
 
+  // Handle tab changes with a websocet reconnect to prevent map markers from flying around :D
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        setShouldAnimate(false);
+
+        setTimeout(() => {
+          setShouldAnimate(true);
+        }, 100);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  const filteredVehicles = useMemo(() => {
+    let result = vehicles;
+    if (searchQuery) {
+      result = result.filter((v) => v.routeName.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+    if (selectedRoutes.length > 0) {
+      result = result.filter((v) => selectedRoutes.includes(v.routeName));
+    }
+    return result;
+  }, [vehicles, searchQuery, selectedRoutes]);
+
   return (
     <>
       <div className="fixed top-5 right-5 z-[1000]">
@@ -80,7 +112,17 @@ const App = () => {
       <div className="fixed top-20 right-5 z-[1000] bg-blue-500 text-white px-4 py-2 rounded-lg">
         Vehicles: {vehicles.length}
       </div>
-      <MapContainer vehicles={vehicles} loading={loading} />
+      <div className="fixed top-5 left-5 z-[1000] ">
+        <Search query={searchQuery} onQueryChange={setSearchQuery} />
+      </div>
+      <div className="fixed top-5 left-65 z-[1000] ">
+        <Filter
+          vehicles={vehicles}
+          selectedRoutes={selectedRoutes}
+          onSelectRoutes={setSelectedRoutes}
+        />
+      </div>
+      <MapContainer vehicles={filteredVehicles} loading={loading} shouldAnimate={shouldAnimate}/>
     </>
   );
 };

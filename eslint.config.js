@@ -26,7 +26,7 @@ export default defineConfig([
     rules: {
       ...tseslint.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": "warn",
-      "no-console": "warn",
+      "no-console": "off",
       semi: "error",
       quotes: ["error", "double"],
       "prefer-const": "error",
