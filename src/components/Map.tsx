@@ -5,10 +5,11 @@ import {
   NavigationControl,
   Popup,
   useMap,
+  type MapRef,
 } from "@vis.gl/react-maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Supercluster from "supercluster";
-import { memo, useCallback, useEffect, useMemo, useState, type FC } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC } from "react";
 import { DEFAULT_LAT, DEFAULT_LON } from "../utils/constants";
 import type { Vehicle, ViewportBounds } from "../utils/types";
 import { useVehicleAnimation } from "../hooks/useVehicleAnimation";
@@ -266,23 +267,40 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean; shouldAnimate: boo
     );
   }
 );
-
 const MapContainer: FC<MapContainerProps> = memo(({ vehicles, loading, shouldAnimate }) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<MapRef | null>(null);
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
+
+  useEffect(() => {
+    if (!containerRef.current || !mapRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      mapRef.current?.resize();
+    });
+
+    observer.observe(containerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <MapGL
-      initialViewState={{
-        latitude: DEFAULT_LAT,
-        longitude: DEFAULT_LON,
-        zoom: 14,
-        pitch: 60,
-      }}
-      style={{ width: windowWidth, height: windowHeight }}
-      mapStyle="/styles/map.json"
-    >
-      <MapContent vehicles={vehicles} loading={loading} shouldAnimate={shouldAnimate} />
-    </MapGL>
+    <div ref={containerRef} className="h-full w-full">
+      <MapGL
+        ref={mapRef}
+        initialViewState={{
+          latitude: DEFAULT_LAT,
+          longitude: DEFAULT_LON,
+          zoom: 14,
+          pitch: 60,
+        }}
+        style={{ width: windowWidth, height: windowHeight }}
+        mapStyle="/styles/map.json"
+      >
+        <MapContent vehicles={vehicles} loading={loading} shouldAnimate={shouldAnimate} />
+      </MapGL>
+    </div>
   );
 });
 
