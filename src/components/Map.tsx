@@ -1,9 +1,11 @@
 import {
   GeolocateControl,
+  Layer,
   Map as MapGL,
   Marker,
   NavigationControl,
   Popup,
+  Source,
   useMap,
   type MapRef,
 } from "@vis.gl/react-maplibre";
@@ -15,6 +17,7 @@ import type { Vehicle, ViewportBounds } from "../utils/types";
 import { useVehicleAnimation } from "../hooks/useVehicleAnimation";
 import { VehiclePopupContent } from "./VehiclePopupContent";
 import { useViewportFiltering } from "../hooks/useViewportFiltering";
+import { useRouteShape } from "../hooks/useRouteShape";
 
 interface MapContainerProps {
   vehicles: Vehicle[];
@@ -52,11 +55,19 @@ const getVehicleColor = (vehicleType: string): string => VEHICLE_COLORS[vehicleT
 const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean; shouldAnimate: boolean }> = memo(
   ({ vehicles, loading, shouldAnimate }) => {
     const animatedVehicles = useVehicleAnimation(vehicles, shouldAnimate);
-
     const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+    const [selectedRoute, setSelectedRoute] = useState<{
+      routeId: string;
+      directionId: number;
+    } | null>(null);
     const [zoom, setZoom] = useState<number>(14);
     const [bounds, setBounds] = useState<ViewportBounds | null>(null);
     const { current: map } = useMap();
+
+    const { coordinates: routeShape } = useRouteShape(
+      selectedRoute?.routeId ?? null,
+      selectedRoute?.directionId ?? null
+    );
 
     useEffect(() => {
       if (!map) return;
@@ -122,7 +133,7 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean; shouldAnimate: boo
       const sc = new Supercluster({
         radius: 50,
         maxZoom: 15,
-        minPoints: 4,
+        minPoints: 2,
       });
       sc.load(points);
       return sc;
@@ -151,6 +162,16 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean; shouldAnimate: boo
         selectedVehicleId ? animatedVehicles.find((v) => v.vehicleId === selectedVehicleId) : null,
       [selectedVehicleId, animatedVehicles]
     );
+
+    const handleVehicleSelect = useCallback((vehicle: Vehicle) => {
+      setSelectedVehicleId(vehicle.vehicleId);
+      setSelectedRoute({ routeId: vehicle.routeId, directionId: vehicle.directionId });
+    }, []);
+
+    const handlePopupClose = useCallback(() => {
+      setSelectedVehicleId(null);
+      setSelectedRoute(null);
+    }, []);
 
     return (
       <>
@@ -208,7 +229,8 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean; shouldAnimate: boo
                 key={vehicleId}
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
-                  setSelectedVehicleId(vehicleId);
+                  const vehicle = vehicles.find((v) => v.vehicleId === vehicleId);
+                  if (vehicle) handleVehicleSelect(vehicle);
                 }}
                 longitude={lng}
                 latitude={lat}
@@ -233,7 +255,9 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean; shouldAnimate: boo
                     position: "relative",
                   }}
                 >
-                  {routeName}
+                  <span style={{ transform: `rotate(${-bearing}deg)`, display: "inline-block" }}>
+                    {routeName}
+                  </span>
                   <div
                     style={{
                       position: "absolute",
@@ -257,11 +281,42 @@ const MapContent: FC<{ vehicles: Vehicle[]; loading: boolean; shouldAnimate: boo
             anchor="bottom"
             latitude={selectedVehicle.animatedLatitude}
             longitude={selectedVehicle.animatedLongitude}
-            onClose={() => setSelectedVehicleId(null)}
+            onClose={handlePopupClose}
             offset={15}
           >
             <VehiclePopupContent vehicle={selectedVehicle} />
           </Popup>
+        )}
+
+        {routeShape.length > 0 && (
+          <Source
+            id="route-line"
+            type="geojson"
+            data={{
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "LineString",
+                coordinates: routeShape.map((coord) => [coord.lon, coord.lat]),
+              },
+            }}
+          >
+            <Layer
+              id="route-line-layer"
+              type="line"
+              paint={{
+                "line-color": selectedVehicle
+                  ? getVehicleColor(selectedVehicle.vehicleType)
+                  : "#3B82F6",
+                "line-width": 6,
+                "line-opacity": 1,
+              }}
+              layout={{
+                "line-join": "round",
+                "line-cap": "round",
+              }}
+            ></Layer>
+          </Source>
         )}
       </>
     );
