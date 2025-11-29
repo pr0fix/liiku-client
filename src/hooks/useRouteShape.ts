@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { VITE_SHAPE_API_URL } from "../utils/constants";
+import { VITE_API_URL } from "../utils/constants";
 
 interface Coordinate {
   lat: number;
@@ -25,16 +25,13 @@ export const useRouteShape = (routeId: string | null, directionId: number | null
     }
 
     const fetchShape = async () => {
-      console.log("Fetching shape for:", routeId, directionId);
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get<ShapeResponse>(
-          `${VITE_SHAPE_API_URL}/shape/${routeId}/${directionId}`
+          `${VITE_API_URL}/shape/${routeId}/${directionId}`
         );
-
         setCoordinates(response.data.coordinates);
-        console.log(response.data.coordinates);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch shape");
         setCoordinates([]);

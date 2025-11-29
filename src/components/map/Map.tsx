@@ -1,9 +1,9 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Map as MapGL, type MapRef } from "@vis.gl/react-maplibre";
 import { memo, useEffect, useRef, type FC } from "react";
-import { DEFAULT_LAT, DEFAULT_LON } from "../utils/constants";
-import type { Vehicle } from "../utils/types";
-import { MapContent } from "./map/MapContent";
+import { DEFAULT_LAT, DEFAULT_LON } from "../../utils/constants";
+import type { Vehicle } from "../../utils/types";
+import { MapContent } from "../map/MapContent";
 
 interface MapContainerProps {
   vehicles: Vehicle[];

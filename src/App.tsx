@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import MapContainer from "./components/Map";
+import MapContainer from "./components/map/Map";
 import type { ConnectionStatus, Vehicle } from "./utils/types";
 import { WebSocketService } from "./services/websocketService";
 import { Search } from "./components/Search";

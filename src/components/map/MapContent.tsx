@@ -82,7 +82,9 @@ export const MapContent: FC<MapContentProps> = memo(({ vehicles, loading, should
 
   const selectedVehicle = useMemo(
     () =>
-      selectedVehicleId ? animatedVehicles.find((v: Vehicle) => v.vehicleId === selectedVehicleId) : null,
+      selectedVehicleId
+        ? animatedVehicles.find((v: Vehicle) => v.vehicleId === selectedVehicleId)
+        : null,
     [selectedVehicleId, animatedVehicles]
   );
 
