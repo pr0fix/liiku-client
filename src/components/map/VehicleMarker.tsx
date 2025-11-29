@@ -37,14 +37,13 @@ export const VehicleMarker: FC<VehicleMarkerProps> = ({
         width: 0,
         height: 0,
         borderRadius: "100%",
-        border: "12px solid white",
+        border: "16px solid white",
         cursor: "pointer",
-        filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))",
         boxShadow: `0 0 0 3px ${getVehicleColor(vehicleType)}`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: routeName.length > 3 ? "9px" : "12px",
+        fontSize: routeName.length > 3 ? "12px" : "14px",
         fontWeight: "bold",
         color: "black",
         position: "relative",
@@ -56,14 +55,14 @@ export const VehicleMarker: FC<VehicleMarkerProps> = ({
       <div
         style={{
           position: "absolute",
-          top: "-18px",
+          top: "-24px",
           left: "50%",
           transform: "translateX(-50%)",
           width: 0,
           height: 0,
-          borderLeft: "8px solid transparent",
-          borderRight: "8px solid transparent",
-          borderBottom: `6px solid ${getVehicleColor(vehicleType)}`,
+          borderLeft: "10px solid transparent",
+          borderRight: "10px solid transparent",
+          borderBottom: `8px solid ${getVehicleColor(vehicleType)}`,
         }}
       />
     </div>

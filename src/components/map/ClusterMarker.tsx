@@ -20,8 +20,8 @@ export const ClusterMarker: FC<ClusterMarkerProps> = ({ longitude, latitude, cou
   >
     <div
       style={{
-        width: 36,
-        height: 36,
+        width: 40,
+        height: 40,
         borderRadius: "50%",
         backgroundColor: "#2563EB",
         display: "flex",
