@@ -4,3 +4,19 @@ html, body, #root {
     height: 100%;
     margin: 0
 }
+
+.maplibregl-popup-close-button {
+    font-size: 20px;
+    padding: 4px 8px;
+    color: #666;
+    background: transparent;
+    border: none;
+    right: 4px;
+    top: 4px;
+}
+
+.maplibregl-popup-close-button:hover {
+  color: #000;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
