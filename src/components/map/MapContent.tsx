@@ -1,7 +1,6 @@
 import { GeolocateControl, NavigationControl, Popup, useMap } from "@vis.gl/react-maplibre";
 import { memo, useCallback, useEffect, useMemo, useState, type FC } from "react";
 import { useVehicleAnimation } from "../../hooks/useVehicleAnimation";
-import { useViewportFiltering } from "../../hooks/useViewportFiltering";
 import { useRouteShape } from "../../hooks/useRouteShape";
 import { useClustering } from "../../hooks/useClustering";
 import type { Vehicle, ViewportBounds } from "../../utils/types";
@@ -54,29 +53,15 @@ export const MapContent: FC<MapContentProps> = memo(({ vehicles, loading, should
     };
   }, [map]);
 
-  const viewportBounds: ViewportBounds | null = useMemo(() => {
-    if (!map) return null;
-    const mapBounds = map.getBounds();
-    return {
-      north: mapBounds.getNorth(),
-      south: mapBounds.getSouth(),
-      east: mapBounds.getEast(),
-      west: mapBounds.getWest(),
-    };
-  }, [map, bounds]);
 
-  const animatedVehiclesInViewport = useViewportFiltering(
-    animatedVehicles,
-    viewportBounds ?? { north: 0, south: 0, east: 0, west: 0 }
-  );
 
   const animatedById = useMemo(() => {
-    const m = new Map<string, (typeof animatedVehiclesInViewport)[number]>();
-    for (const v of animatedVehiclesInViewport) {
+    const m = new Map<string, (typeof animatedVehicles)[number]>();
+    for (const v of animatedVehicles) {
       m.set(v.vehicleId, v);
     }
     return m;
-  }, [animatedVehiclesInViewport]);
+  }, [animatedVehicles]);
 
   const { clusters, supercluster } = useClustering(vehicles, bounds, zoom);
 
@@ -109,12 +94,15 @@ export const MapContent: FC<MapContentProps> = memo(({ vehicles, loading, should
 
   if (!map) return null;
 
+  const showOnlySelected = selectedVehicleId !== null;
+
   return (
     <>
       <GeolocateControl position="bottom-right" />
       <NavigationControl visualizePitch visualizeRoll position="bottom-right" />
 
       {!loading &&
+        !showOnlySelected &&
         clusters.map((feature) => {
           if (feature.properties.cluster) {
             const [lng, lat] = feature.geometry.coordinates as [number, number];
@@ -151,6 +139,19 @@ export const MapContent: FC<MapContentProps> = memo(({ vehicles, loading, should
             />
           );
         })}
+
+      {selectedVehicle && (
+        <VehicleMarker
+          key={`selected-${selectedVehicle.vehicleId}`}
+          vehicleId={selectedVehicle.vehicleId}
+          longitude={selectedVehicle.animatedLongitude}
+          latitude={selectedVehicle.animatedLatitude}
+          bearing={selectedVehicle.bearing}
+          routeName={selectedVehicle.routeName}
+          vehicleType={selectedVehicle.vehicleType}
+          onClick={() => {}}
+        />
+      )}
 
       {selectedVehicle && (
         <Popup
