@@ -1,10 +1,10 @@
-# Liiku Client
+# liiku-client
 
 A real-time public transit visualization application for Helsinki metropolitan area built with React, TypeScript and Maplibre GL JS.
 
 ## Overview
 
-Liiku Client provides an interactive map interface for tracking public transport vehicles in real-time. The application displays buses, trams, lightrails, metros, trains and ferries with live position updates, route visualization with polylines and detailed vehicle information popups.
+liiku-client provides an interactive map interface for tracking public transport vehicles in real-time. The application displays buses, trams, lightrails, metros, trains and ferries with live position updates, route visualization with polylines and detailed vehicle information popups.
 
 ## Features
 
