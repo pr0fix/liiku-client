@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import type { Vehicle } from "../utils/types";
-import { useRouteEmission } from "../hooks/useRouteEmission";
+import type { Vehicle } from "../../utils/types";
+import { useRouteEmission } from "../../hooks/useRouteEmission";
 
 interface VehiclePopupContentProps {
   vehicle: Vehicle;

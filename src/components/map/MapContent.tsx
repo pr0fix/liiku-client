@@ -1,10 +1,10 @@
 import { GeolocateControl, NavigationControl, Popup, useMap } from "@vis.gl/react-maplibre";
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC } from "react";
+import { memo, useCallback, useEffect, useMemo, useState, type FC } from "react";
 import { useVehicleAnimation } from "../../hooks/useVehicleAnimation";
 import { useRouteShape } from "../../hooks/useRouteShape";
 import { useClustering } from "../../hooks/useClustering";
 import type { Vehicle, ViewportBounds } from "../../utils/types";
-import { VehiclePopupContent } from "../VehiclePopupContent";
+import { VehiclePopupContent } from "./VehiclePopupContent";
 import { ClusterMarker } from "./ClusterMarker";
 import { VehicleMarker } from "./VehicleMarker";
 import { RouteLineLayer } from "./RouteLineLayer";

@@ -1,26 +1,60 @@
 # Liiku Client
 
-This is the client-side code for the Liiku map application, built with React, Vite, MapLibre, and Tailwind CSS.
+A real-time public transit visualization application for Helsinki metropolitan area built with React, TypeScript and Maplibre GL JS.
+
+## Overview
+
+Liiku Client provides an interactive map interface for tracking public transport vehicles in real-time. The application displays buses, trams, lightrails, metros, trains and ferries with live position updates, route visualization with polylines and detailed vehicle information popups.
 
 ## Features
 
-- Interactive map using [MapLibre GL JS](https://maplibre.org/)
-- Custom map style ([public/styles/map.json](public/styles/map.json)) made with and exported from [Maputnik](https://maputnik.github.io/)
+- **Real-time vehicle tracking** — Live position updates with smooth animations
+- **Clustered markers** — Viewport based grouping of nearby vehicles at lower zoom levels
+- **Route visualization** — Display route lines when selecting a vehicle
+- **Vehicle type indicators** — Color-coded markers by transport mode (bus, tram, lightrail, metro, train, ferry)
+- **Direction indicators** — Vehicle bearing displayed on markers
+- **Interactive popups** — Detailed vehicle and route information on selection
+- **Custom map styling** — Clean, purpose-built map style for optimized transit data and readability
+
+## Tech Stack
+
+| Category   | Technology                             |
+| ---------- | -------------------------------------- |
+| Framework  | React                                  |
+| Language   | TypeScript                             |
+| Build Tool | Vite                                   |
+| Mapping    | MapLibre GL JS, @vis.gl/react-maplibre |
+| Clustering | Supercluster                           |
+| Styling    | tailwindCSS                            |
+| Data       | Digitransit GTFS-RT API                |
 
 ## Project Structure
 
 ```
 src/
-  App.tsx            # Main app component
-  main.tsx           # Entry point
-  index.css          # Main stylesheet
-  components/
-    Map.tsx          # Map container using MapLibre
-  utils/
-    constants.ts     # Constant variables
+├── components/
+│   ├── map/
+│   │   ├── Map.tsx              # Map container
+│   │   ├── MapContent.tsx       # Markers, popups, and layers
+│   │   ├── VehicleMarker.tsx    # Individual vehicle marker
+│   │   ├── ClusterMarker.tsx    # Clustered marker component
+│   │   └── RouteLineLayer.tsx   # Route polyline layer
+│   │   └── VehiclePopupContent.tsx   # Route polyline layer
+├── hooks/
+│   ├── useVehicles.ts           # Vehicle data fetching
+│   ├── useVehicleAnimation.ts   # Smooth position interpolation
+│   ├── useClustering.ts         # Marker clustering logic
+│   └── useRouteShape.ts         # Route geometry fetching
+├── utils/
+│   ├── constants.ts             # Configuration constants
+│   ├── types.ts                 # TypeScript type definitions
+│   └── vehicleColors.ts         # Vehicle type color mapping
+├── App.tsx                      # Root component
+├── main.tsx                     # Application entry point
+└── index.css                    # Global styles
 public/
-  styles/
-    map.json         # Custom MapLibre-styles
+└── styles/
+    └── map.json                 # Custom MapLibre style
 ```
 
 ## Getting Started
@@ -28,83 +62,69 @@ public/
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18 or newer recommended)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [npm](https://www.npmjs.com/), [yarn](https://yarnpkg.com/) or [pnpm](https://pnpm.io/)
 
 ### Installation
 
-1. Install dependencies:
-
-   ```sh
-   npm install
-   ```
-
-2. Start the development server:
-
-   ```sh
-   npm run dev
-   ```
-
-3. Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### Build for Production
-
 ```sh
-npm run build
+# Clone the repository
+git clone https://github.com/your-username/liiku-client.git
+cd liiku-client
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
-### Preview Production Build
+The application will be available at [http://localhost:5173](http://localhost:5173).
 
-```sh
-npm run preview
-```
+### Scripts
 
-### Lint the Code
-
-```sh
-npm run lint
-```
+| Command           | Description                              |
+| ----------------- | ---------------------------------------- |
+| `npm run dev`     | Start development server with hot reload |
+| `npm run build`   | Build for production                     |
+| `npm run preview` | Preview production build locally         |
+| `npm run lint`    | Run ESLint                               |
 
 ## Configuration
 
-- Map style is defined in [public/styles/map.json](public/styles/map.json).
-- Default map center coordinates to Helsinki city centre are set in [`utils/constants.ts`](src/utils/constants.ts).
+### Environment Variables
 
-## Dependencies
+Create a `.env` file in the project root:
 
-- [React](https://react.dev/)
-- [Vite](https://vitejs.dev/)
-- [MapLibre GL JS](https://maplibre.org/)
-- [@vis.gl/react-maplibre](https://visgl.github.io/react-maplibre/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [TypeScript](https://www.typescriptlang.org/)
+```env
+VITE_API_BASE_URL=your_api_url
+```
 
-## TODO
+### Map Configuration
 
-### Map Features
-- [ ] **Clustered markers** - Group nearby vehicles when zoomed out (consider supercluster or deck.gl)
-- [x] **Vehicle direction indicators** - Use bearing property to show direction
-- [ ] **Route lines** - Draw actual routes using GTFS shapes data (show on vehicle selection)
-- [ ] **3D vehicle models** - Switch markers to 3D models when zoomed in closely
-- [ ] **Vehicle history trail** - Display path history for selected vehicles
+- **Map style**: `public/styles/map.json` (editable with [Maputnik](https://maputnik.github.io/))
+- **Default center**: Helsinki city center, configurable in `src/utils/constants.ts`
 
-### UI/UX
-- [ ] **Vehicle popup** - Show detailed information (route, destination, vehicle ID)
-- [ ] **Filter controls** - Filter by route number, direction, or vehicle type
-- [ ] **Search functionality** - Find specific routes and center map on them
-- [ ] **Dark mode** - Theme toggle with localStorage persistence
-- [ ] **Loading states** - Add skeletons or progress bars for better UX
-- [x] **Route color coding** - Different colors per vehicle type (blue for buses, orange for metro, etc.)
+## Roadmap
 
-### User Features
-- [ ] **User location tracking** - Show nearest vehicles to current position
-- [ ] **Follow mode** - Auto-center and follow selected vehicle along route
-- [ ] **Favorites/Bookmarks** - Save and track specific routes
-- [ ] **Arrival predictions** - Display estimated arrival times at upcoming stops
+### Planned Features
 
-### Performance
-- [ ] **Viewport rendering** - Only render vehicles visible in current viewport
-- [ ] **Route/stop caching** - Cache data in localStorage to reduce API calls
+- [ ] Filter controls for route numbers, directions, and vehicle types
+- [ ] Search functionality for routes and stops
+- [ ] Dark mode with localStorage persistence
+- [ ] User location tracking with nearest vehicle display
+- [ ] Follow mode for auto-centering on selected vehicles
+- [ ] Favorites system for bookmarking routes
+- [ ] Stops shown as markers on route lines
+- [ ] Arrival time predictions at stops
+- [ ] 3D vehicle models at high zoom levels
 
-### Backend/Security
-- [ ] **Authentication** - Implement user registration with database
-- [ ] **API rate limiting** - Add token or cookie system to prevent misuse
+### Performance Optimizations
+
+- [ ] Route and stop data caching
+- [ ] Service worker for offline support
+
+## Acknowledgments
+
+- [Digitransit](https://digitransit.fi/) for providing the public transit API
+- [MapLibre](https://maplibre.org/) for the open-source mapping library
+- [HSL](https://www.hsl.fi/) for Helsinki region transit data
