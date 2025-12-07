@@ -27,7 +27,6 @@ export const useRouteEmission = (routeId: string | null) => {
       try {
         const response = await axios.get<Emission>(`${VITE_API_URL}/emission/${routeId}`);
         setEmissions(response.data);
-        console.log(response.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch emissions");
         setEmissions(undefined);

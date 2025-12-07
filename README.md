@@ -96,7 +96,7 @@ The application will be available at [http://localhost:5173](http://localhost:51
 Create a `.env` file in the project root:
 
 ```env
-VITE_API_BASE_URL=your_api_url
+VITE_API_URL=your_api_url
 ```
 
 ### Map Configuration
@@ -114,8 +114,7 @@ VITE_API_BASE_URL=your_api_url
 - [ ] User location tracking with nearest vehicle display
 - [ ] Follow mode for auto-centering on selected vehicles
 - [ ] Favorites system for bookmarking routes
-- [ ] Stops shown as markers on route lines
-- [ ] Arrival time predictions at stops
+- [x] Stops shown as markers on route lines
 - [ ] 3D vehicle models at high zoom levels
 
 ### Performance Optimizations

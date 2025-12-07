@@ -29,6 +29,26 @@ interface VehicleChanges {
   removed: string[];
 }
 
+interface Stop {
+  stopId: string;
+  name: string;
+  lat: number;
+  lon: number;
+  arrivalTime?: string;
+  sequence?: number;
+}
+
+interface Departure {
+  route_id: string;
+  route_name: string;
+  headsign: string;
+  departure_time: string;
+}
+
+interface StopWithDepartures extends Stop {
+  departures: Departure[];
+}
+
 type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
 
 interface WebSocketMessage {
@@ -52,4 +72,7 @@ export type {
   VehicleChanges,
   WebSocketMessage,
   ViewportBounds,
+  Stop,
+  Departure,
+  StopWithDepartures,
 };
