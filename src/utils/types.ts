@@ -65,6 +65,12 @@ interface ViewportBounds {
   west: number;
 }
 
+interface User {
+  username: string;
+  email: string;
+  password: string;
+}
+
 export type {
   Vehicle,
   AnimatedVehicle,
@@ -75,4 +81,5 @@ export type {
   Stop,
   Departure,
   StopWithDepartures,
+  User,
 };
