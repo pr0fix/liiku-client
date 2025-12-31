@@ -35,6 +35,7 @@ body,
   --border: #e2e8f0;
   --error: #ef4444;
   --success: #10b981;
+  --warning: #efb100;
 }
 
 :root[data-theme="dark"] {
@@ -49,6 +50,7 @@ body,
   --border: #334155;
   --error: #f87171;
   --success: #34d399;
+  --warning: #efb100;
 }
 
 @theme {
@@ -63,4 +65,5 @@ body,
   --color-border: var(--border);
   --color-error: var(--error);
   --color-success: var(--success);
+  --color-warning: var(--warning);
 }

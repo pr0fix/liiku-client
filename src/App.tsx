@@ -51,7 +51,7 @@ const App = () => {
     };
   }, [handleVehiclesUpdate, handleStatusChange, handleError]);
 
-  // Handle tab changes with a websocet reconnect to prevent map markers from flying around :D
+  // Handle tab changes with a websocket reconnect to prevent map markers from flying around :D
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
@@ -81,17 +81,17 @@ const App = () => {
   }, [vehicles, searchQuery, selectedRoutes]);
 
   return (
-    <div className="h-screen w-screen relative overflow-hidden">
-      <div className="fixed top-5 right-5 z-[1000]">
+    <div className="h-screen w-screen relative overflow-hidden bg-background">
+      <div className="fixed top-5 right-15 z-[1000]">
         <div
-          className={`px-4 py-2 rounded-lg text-white font-semibold ${
+          className={`px-4 py-2 rounded-lg font-semibold shadow-lg transition-colors ${
             connectionStatus === "connected"
-              ? "bg-green-500"
+              ? "bg-success text-white"
               : connectionStatus === "connecting"
-              ? "bg-yellow-500"
+              ? "bg-warning text-white"
               : connectionStatus === "error"
-              ? "bg-red-500"
-              : "bg-gray-500"
+              ? "bg-error text-white"
+              : "bg-text-muted text-white"
           }`}
         >
           {connectionStatus === "connected"
@@ -104,18 +104,16 @@ const App = () => {
         </div>
       </div>
       {error && (
-        <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg z-[1000] shadow-lg">
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-error text-white px-6 py-3 rounded-lg z-[1000] shadow-lg">
           {error}
         </div>
       )}
 
-      <div className="fixed top-20 right-5 z-[1000] bg-blue-500 text-white px-4 py-2 rounded-lg">
+      <div className="fixed top-20 right-5 z-[1000] bg-primary text-white px-4 py-2 rounded-lg shadow-lg font-semibold">
         Vehicles: {vehicles.length}
       </div>
-      <div className="fixed top-5 left-5 z-[1000] ">
+      <div className="fixed top-5 left-5 z-[1000] flex gap-3">
         <Search query={searchQuery} onQueryChange={setSearchQuery} />
-      </div>
-      <div className="fixed top-5 left-64 z-[1000] ">
         <Filter
           vehicles={vehicles}
           selectedRoutes={selectedRoutes}
