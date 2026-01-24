@@ -2,9 +2,62 @@
 
 A real-time public transit visualization application for Helsinki metropolitan area built with React, TypeScript and Maplibre GL JS.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Scripts](#scripts)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Map Configuration](#map-configuration)
+- [Roadmap](#roadmap)
+  - [Planned Features](#planned-features)
+  - [Performance Optimizations](#performance-optimizations)
+- [Acknowledgments](#acknowledgments)
+
 ## Overview
 
 liiku-client provides an interactive map interface for tracking public transport vehicles in real-time. The application displays buses, trams, lightrails, metros, trains and ferries with live position updates, route visualization with polylines and detailed vehicle information popups.
+
+## Screenshots
+
+<details>
+<summary style="font-weight:bold">Click to view screenshots</summary>
+
+### Main Map View
+
+![Main map view](public/screenshots/main-mapview.png)
+
+### Route Visualization & Vehicle Popup
+
+![Route line visualization](public/screenshots/route-visualization.png)
+
+### Stop Details Popup
+
+![Stop details popup](public/screenshots/stop-popup.png)
+
+### Login
+
+![Login screen](public/screenshots/login.png)
+
+### Sign Up
+
+![Sign up form](public/screenshots/signup.png)
+
+### Password Reset
+
+![Password reset flow](public/screenshots/password-reset.png)
+
+### Terms of Service
+
+![Terms of service](public/screenshots/tos.png)
+
+</details>
 
 ## Features
 
@@ -31,30 +84,46 @@ liiku-client provides an interactive map interface for tracking public transport
 ## Project Structure
 
 ```
+public/
+└── screenshots/                      # Screenshots of the application
+└── styles/
+    └── map.json                      # Custom MapLibre style-file
 src/
 ├── components/
+|   ├── auth/
+│   │   ├── Login.tsx                 # Login form
+│   │   ├── ResetPassword.tsx         # Password reset request page
+│   │   ├── Signup.tsx                # Signup form
+│   │   ├── Terms.tsx                 # Terms of Service page
 │   ├── map/
-│   │   ├── Map.tsx              # Map container
-│   │   ├── MapContent.tsx       # Markers, popups, and layers
-│   │   ├── VehicleMarker.tsx    # Individual vehicle marker
-│   │   ├── ClusterMarker.tsx    # Clustered marker component
-│   │   └── RouteLineLayer.tsx   # Route polyline layer
+│   │   ├── ClusterMarker.tsx         # Clustered marker component
+│   │   ├── Map.tsx                   # Map container
+│   │   ├── MapContent.tsx            # Markers, popups, and layers
+│   │   └── RouteLineLayer.tsx        # Route polyline layer
+│   │   └── StopMarker.tsx            # Individual stop marker
+│   │   └── StopPopupContent.tsx      # Individual stop popup
+│   │   ├── VehicleMarker.tsx         # Individual vehicle marker
 │   │   └── VehiclePopupContent.tsx   # Route polyline layer
+|   ├── Filter.tsx                    # Route filtering
+|   ├── Layout.tsx                    # Main application layout wrapper
+|   ├── Search.tsx                    # Route search functionality
+|   ├── ThemeToggle.tsx               # Dark/light mode theme switcher
 ├── hooks/
-│   ├── useVehicles.ts           # Vehicle data fetching
-│   ├── useVehicleAnimation.ts   # Smooth position interpolation
-│   ├── useClustering.ts         # Marker clustering logic
-│   └── useRouteShape.ts         # Route geometry fetching
+│   ├── useVehicles.ts                # Vehicle data fetching
+│   ├── useVehicleAnimation.ts        # Smooth position interpolation
+│   ├── useClustering.ts              # Marker clustering logic
+│   └── useRouteShape.ts              # Route geometry fetching
+├── services/
+│   ├── websocketService.ts           # Websocket connector
 ├── utils/
-│   ├── constants.ts             # Configuration constants
-│   ├── types.ts                 # TypeScript type definitions
-│   └── vehicleColors.ts         # Vehicle type color mapping
-├── App.tsx                      # Root component
-├── main.tsx                     # Application entry point
-└── index.css                    # Global styles
-public/
-└── styles/
-    └── map.json                 # Custom MapLibre style
+│   ├── animation.ts                  # Vehicle movement calculator
+│   ├── constants.ts                  # Configuration constants
+│   ├── types.ts                      # TypeScript type definitions
+│   └── vehicleColors.ts              # Vehicle type color mapping
+├── App.tsx                           # Root component
+└── index.css                         # Global styles
+├── main.tsx                          # Application entry point
+
 ```
 
 ## Getting Started
@@ -110,11 +179,11 @@ VITE_API_URL=your_api_url
 
 - [ ] Filter controls for route numbers, directions, and vehicle types
 - [ ] Search functionality for routes and stops
-- [ ] Dark mode with localStorage persistence
+- ~~[x] Dark mode with localStorage persistence~~
 - [ ] User location tracking with nearest vehicle display
-- [ ] Follow mode for auto-centering on selected vehicles
+- ~~[x] Follow mode for auto-centering on selected vehicles~~
 - [ ] Favorites system for bookmarking routes
-- [x] Stops shown as markers on route lines
+- ~~[x] Stops shown as markers on route lines~~
 - [ ] 3D vehicle models at high zoom levels
 
 ### Performance Optimizations

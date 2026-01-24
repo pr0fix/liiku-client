@@ -3,15 +3,6 @@ import type { Stop } from "../utils/types";
 import axios from "axios";
 import { VITE_API_URL } from "../utils/constants";
 
-// Call get all stops to show them on the map all at once
-
-// Call stops/:stopid when you want to get the stop departures on the marker press
-
-// Call stops/route/:routeId/:directionId when you press a vehicle marker
-// and then map them onto the polyline
-
-// Get stops within specific viewport bounds -> /stops/bounds
-
 export const useRouteStops = (
   routeId: string | null,
   directionId: number | null
