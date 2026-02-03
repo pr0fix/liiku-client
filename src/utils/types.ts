@@ -64,11 +64,13 @@ interface ViewportBounds {
   east: number;
   west: number;
 }
-
-interface User {
+interface LoginCredentials {
   username: string;
-  email: string;
   password: string;
+}
+
+interface SignupCredentials extends LoginCredentials {
+  email: string;
 }
 
 export type {
@@ -81,5 +83,6 @@ export type {
   Stop,
   Departure,
   StopWithDepartures,
-  User,
+  SignupCredentials,
+  LoginCredentials,
 };
