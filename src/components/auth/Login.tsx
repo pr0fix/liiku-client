@@ -9,12 +9,7 @@ interface InputFieldsProps {
   setPassword: (value: string) => void;
 }
 
-const InputFields = ({
-  username,
-  setUsername,
-  password,
-  setPassword,
-}: InputFieldsProps) => {
+const InputFields = ({ username, setUsername, password, setPassword }: InputFieldsProps) => {
   return (
     <div className="flex flex-col mt-6 gap-4">
       <input
@@ -47,17 +42,11 @@ const ActionFields = ({ isLoading }: ActionFieldsProps) => {
       <div className="flex items-center mt-4 justify-between">
         <div>
           <input id="remember-checkbox" type="checkbox" />
-          <label
-            htmlFor="remember-checkbox"
-            className="ms-2 text-sm font-medium text-text-muted"
-          >
+          <label htmlFor="remember-checkbox" className="ms-2 text-sm font-medium text-text-muted">
             Remember me
           </label>
         </div>
-        <Link
-          to="/login/reset"
-          className="text-sm font-medium text-accent hover:underline"
-        >
+        <Link to="/login/reset" className="text-sm font-medium text-accent hover:underline">
           Forgot password?
         </Link>
       </div>
@@ -88,10 +77,11 @@ const LoginForm: FC = () => {
       const data = await login({ username, password });
       localStorage.setItem("token", data.token);
       navigate("/");
-      console.log(data)
-    } catch (err: any) {
-      console.log(err)
-      setError(err.response?.data?.message || "Login failed");
+    } catch (err: unknown) {
+      console.log(err);
+      if (err instanceof Error) {
+        setError(err.message || "Login failed");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -102,8 +92,7 @@ const LoginForm: FC = () => {
       <div className="bg-surface text-text text-center border border-border rounded-lg py-8 px-12 shadow-lg">
         <h1 className="font-bold text-3xl">Welcome back</h1>
         <p className="text-text-muted max-w-sm mt-4 text-md sm:text-lg">
-          Sign in to continue planning your journeys and tracking your favorite
-          routes.
+          Sign in to continue planning your journeys and tracking your favorite routes.
         </p>
         <form onSubmit={handleSubmit}>
           {error && (
@@ -121,10 +110,7 @@ const LoginForm: FC = () => {
         </form>
         <p className="text-text-muted text-sm mt-6">
           Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-accent hover:underline font-medium"
-          >
+          <Link to="/signup" className="text-accent hover:underline font-medium">
             Sign up
           </Link>
         </p>

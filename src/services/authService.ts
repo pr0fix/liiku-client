@@ -2,11 +2,21 @@ import { VITE_API_URL } from "../utils/constants";
 import type { SignupCredentials, LoginCredentials } from "../utils/types";
 import axios from "axios";
 
-export const signUp = async ({
-  email,
-  username,
-  password,
-}: SignupCredentials) => {
+type ApiError = {
+  error?: string;
+  message?: string;
+};
+
+const getApiErrorMessage = (error: unknown, fallback: string) => {
+  if (axios.isAxiosError<ApiError>(error)) {
+    return (
+      error.response?.data?.message || error.response?.data?.error || error.message || fallback
+    );
+  }
+  return fallback;
+};
+
+export const signUp = async ({ email, username, password }: SignupCredentials) => {
   try {
     const response = await axios.post(`${VITE_API_URL}/signup`, {
       email,
@@ -16,7 +26,7 @@ export const signUp = async ({
 
     return response.data;
   } catch (error) {
-    // TODO: error handling
+    throw new Error(getApiErrorMessage(error, "Signup failed"));
   }
 };
 
@@ -28,6 +38,6 @@ export const login = async ({ username, password }: LoginCredentials) => {
     });
     return response.data;
   } catch (error) {
-    // TODO: error handling
+    throw new Error(getApiErrorMessage(error, "Login failed"));
   }
 };
