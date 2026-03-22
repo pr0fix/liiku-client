@@ -45,6 +45,19 @@ export class WebSocketService {
     }
   }
 
+  private isVisibleVehicleType(type?: string | null): boolean {
+    if (!type) return false;
+    const t = type.trim().toLowerCase();
+    return t !== "unknown";
+  }
+
+  private emitVisibleVehicles() {
+    const visible = [...this.vehicles.values()].filter((v) =>
+      this.isVisibleVehicleType(v.vehicleType),
+    );
+    this.onVehiclesUpdate?.(visible);
+  }
+
   private handleMessage(message: WebSocketMessage) {
     switch (message.type) {
       case "initial": {
@@ -53,7 +66,7 @@ export class WebSocketService {
         initialData.forEach((vehicle: Vehicle) => {
           this.vehicles.set(vehicle.vehicleId, vehicle);
         });
-        this.onVehiclesUpdate?.([...this.vehicles.values()]);
+        this.emitVisibleVehicles();
         break;
       }
 
@@ -72,7 +85,7 @@ export class WebSocketService {
           this.vehicles.delete(id);
         });
 
-        this.onVehiclesUpdate?.([...this.vehicles.values()]);
+        this.emitVisibleVehicles();
         break;
       }
 

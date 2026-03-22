@@ -72,10 +72,10 @@ const App = () => {
   const filteredVehicles = useMemo(() => {
     let result = vehicles;
     if (searchQuery) {
-      result = result.filter((v) => v.routeName.toLowerCase().includes(searchQuery.toLowerCase()));
+      result = result.filter((v) => v.vehicleType.toLowerCase().includes(searchQuery.toLowerCase()));
     }
     if (selectedRoutes.length > 0) {
-      result = result.filter((v) => selectedRoutes.includes(v.routeName));
+      result = result.filter((v) => selectedRoutes.includes(v.vehicleType));
     }
     return result;
   }, [vehicles, searchQuery, selectedRoutes]);

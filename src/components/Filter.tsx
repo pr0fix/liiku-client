@@ -7,6 +7,17 @@ interface FilterProps {
   selectedRoutes: string[];
 }
 
+const VEHICLE_TYPE_LABELS: Record<string, string> = {
+  bus: "Bus",
+  trunk: "Trunk",
+  rail: "Rail",
+  tram: "Tram",
+  metro: "Metro",
+  ferry: "Ferry",
+  other: "Light rail",
+  unknown: "Unknown",
+};
+
 export const Filter: FC<FilterProps> = ({
   vehicles,
   onSelectRoutes,
@@ -14,11 +25,11 @@ export const Filter: FC<FilterProps> = ({
 }: FilterProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const toggleRoute = (routeName: string) => {
-    if (selectedRoutes.includes(routeName)) {
-      onSelectRoutes(selectedRoutes.filter((r) => r !== routeName));
+  const toggleRoute = (vehicleType: string) => {
+    if (selectedRoutes.includes(vehicleType)) {
+      onSelectRoutes(selectedRoutes.filter((r) => r !== vehicleType));
     } else {
-      onSelectRoutes([...selectedRoutes, routeName]);
+      onSelectRoutes([...selectedRoutes, vehicleType]);
     }
   };
 
@@ -26,7 +37,7 @@ export const Filter: FC<FilterProps> = ({
     onSelectRoutes([]);
   };
 
-  const uniqueRoutes = [...new Set(vehicles.map((v) => v.routeName))].sort();
+  const uniqueRoutes = [...new Set(vehicles.map((v) => v.vehicleType))].sort();
 
   return (
     <div className="relative">
@@ -82,13 +93,13 @@ export const Filter: FC<FilterProps> = ({
                     readOnly
                     className="mr-2 accent-primary"
                   />
-                  {routeName}
+                  {VEHICLE_TYPE_LABELS[routeName] ?? routeName}
                 </li>
               ))}
             </ul>
           ) : (
             <div className="px-4 py-6 text-center text-text-muted text-sm">
-              No routes available. 
+              No routes available.
             </div>
           )}
         </div>
