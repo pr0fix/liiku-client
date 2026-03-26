@@ -10,11 +10,11 @@ interface FilterProps {
 const VEHICLE_TYPE_LABELS: Record<string, string> = {
   bus: "Bus",
   trunk: "Trunk",
-  rail: "Rail",
+  rail: "Train",
   tram: "Tram",
   metro: "Metro",
   ferry: "Ferry",
-  other: "Light rail",
+  lightrail: "Light rail",
   unknown: "Unknown",
 };
 
